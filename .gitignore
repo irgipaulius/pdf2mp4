@@ -102,3 +102,10 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Custom
+generated/
+downloaded/
+.DS_Store
+sample.pdf
+test1.pdf
