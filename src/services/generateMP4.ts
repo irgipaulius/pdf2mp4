@@ -1,12 +1,14 @@
 import fs from "fs";
 import path from "path";
 
-import { getPdfInfo } from "./services/getPdfInfo";
-import { rasterizePDF } from "./services/rasterizePDF";
+import { getPdfInfo } from "./getPdfInfo";
+import { rasterizePDF } from "./rasterizePDF";
+import { renderVideo } from "./renderVideo";
 
 export async function generateMP4(filename) {
-  const filePath = path.resolve(__dirname, "../", filename);
-  const generatedPath = path.resolve(__dirname, "../", "generated");
+  const projectRootPath = path.resolve(__dirname, "../", "../");
+  const filePath = path.resolve(projectRootPath, filename);
+  const generatedPath = path.resolve(projectRootPath, "generated");
 
   if (!fs.existsSync(generatedPath)) {
     fs.mkdirSync(generatedPath);
@@ -28,6 +30,10 @@ export async function generateMP4(filename) {
     numPages
   );
   console.timeEnd("rasterization");
+
+  console.time("rendering");
+  await renderVideo(); // todo
+  console.timeEnd("rendering");
 
   return {
     filePath,

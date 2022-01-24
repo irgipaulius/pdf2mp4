@@ -5,6 +5,13 @@ NodeJS REST API that converts pdf files to MP4 in high resolution
 
 ## Installation
 
+### Prerequisites
+
+- git
+- npm & node
+- ImageMagick & gm
+- ffmpeg
+
 ### Setup
 
 ```bash
@@ -30,6 +37,15 @@ Next, you must install [ImageMagick](https://www.imagemagick.org/script/download
 - **Standalone** - _install from source:_
     - https://www.imagemagick.org/script/install-source.php
     - https://www.github.com/aheckmann/gm.git
+
+### FFMPEG
+
+- **OSX, Windows**
+    - Download installation executables from https://evermeet.cx/ffmpeg/.
+- **Linux**
+    - `sudo apt install ffmpeg`
+- **FreeBSD**
+    - `pkg install ffmpeg`
 
 ### Run:
 
