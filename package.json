@@ -2,9 +2,10 @@
   "name": "pdf2mp4",
   "version": "1.0.0",
   "description": "rest api that converts pdf to mp4",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -16,5 +17,18 @@
   "bugs": {
     "url": "https://github.com/irgipaulius/pdf2mp4/issues"
   },
-  "homepage": "https://github.com/irgipaulius/pdf2mp4#readme"
+  "homepage": "https://github.com/irgipaulius/pdf2mp4#readme",
+  "devDependencies": {
+    "gm": "^1.23.1",
+    "nodemon": "^2.0.15",
+    "ts-node": "^10.4.0"
+  },
+  "dependencies": {
+    "express": "^4.17.2",
+    "fs": "0.0.1-security",
+    "lodash": "^4.17.21",
+    "path": "^0.12.7",
+    "pdf2pic": "^2.1.4",
+    "pdfjs-dist": "2.3.200"
+  }
 }
