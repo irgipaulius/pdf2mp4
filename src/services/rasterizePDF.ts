@@ -1,12 +1,12 @@
-const { fromPath } = require("pdf2pic");
-const _ = require("lodash");
+import { fromPath } from "pdf2pic";
+import _ from "lodash";
 
-async function rasterizePDF(
-  filePath,
+export async function rasterizePDF(
+  filePath: string,
   destinationPath,
   width,
   height,
-  numPages
+  numPages: number
 ) {
   const hash = (+new Date()).toString(36);
 
@@ -22,15 +22,9 @@ async function rasterizePDF(
   const pageNumbers = [...Array(numPages).keys()].map((a) => a + 1);
   const chunks = _.chunk(pageNumbers, 5); // https://github.com/yakovmeister/pdf2image/issues/54
 
-  await Promise.all(
-    chunks.map(
-      // pdf2pic uses ImageMagic, which uses multithreading by itself.
-      // using worker threads here won't give any benefit.
-      (chunk) => storeAsImage.bulk(chunk)
-    )
-  );
+  // pdf2pic uses ImageMagic, which uses multithreading by itself.
+  // using worker threads here won't give any benefit, Promise.all is just as fast.
+  await Promise.all(chunks.map((chunk) => storeAsImage.bulk!(chunk)));
 
   return hash;
 }
-
-module.exports = rasterizePDF;

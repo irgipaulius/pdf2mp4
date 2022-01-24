@@ -1,7 +1,7 @@
-const pdfjs = require("pdfjs-dist");
+import { getDocument } from "pdfjs-dist";
 
-async function getPdfInfo(dataBuffer) {
-  const pdfDocument = await pdfjs.getDocument({ data: dataBuffer }).promise;
+export async function getPdfInfo(dataBuffer) {
+  const pdfDocument = await getDocument({ data: dataBuffer }).promise;
   const page = await pdfDocument.getPage(1);
   const viewport = page.getViewport({ scale: 1 });
 
@@ -11,5 +11,3 @@ async function getPdfInfo(dataBuffer) {
     height: Math.floor(viewport.height),
   };
 }
-
-module.exports = getPdfInfo;

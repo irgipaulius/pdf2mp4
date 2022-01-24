@@ -1,12 +1,12 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
-const getPdfInfo = require("./services/getPdfInfo");
-const rasterizePDF = require("./services/rasterizePDF");
+import { getPdfInfo } from "./services/getPdfInfo";
+import { rasterizePDF } from "./services/rasterizePDF";
 
-async function generateMP4(filename) {
-  const filePath = path.resolve(__dirname, filename);
-  const generatedPath = path.resolve(__dirname, "generated");
+export async function generateMP4(filename) {
+  const filePath = path.resolve(__dirname, "../", filename);
+  const generatedPath = path.resolve(__dirname, "../", "generated");
 
   if (!fs.existsSync(generatedPath)) {
     fs.mkdirSync(generatedPath);
@@ -35,5 +35,3 @@ async function generateMP4(filename) {
     numPages,
   };
 }
-
-module.exports = generateMP4;

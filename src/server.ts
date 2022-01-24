@@ -1,12 +1,12 @@
-const express = require("express");
-const generateMP4 = require("./generateMP4");
+import express from "express";
+import { generateMP4 } from "./generateMP4";
 
 const app = express();
 
 app.get("/pdf2mp4", async function (req, res) {
   const { filename } = req.query;
   const result = await generateMP4(filename);
-  console.log(JSON.stringify(result, undefined, ' '));
+  console.log(JSON.stringify(result, undefined, " "));
 
   res.send(result);
 });
