@@ -40,8 +40,11 @@ Next, you must install [ImageMagick](https://www.imagemagick.org/script/download
 
 ### FFMPEG
 
-- **OSX, Windows**
+- **OSX**
+    - `brew install ffmpeg`
+- **Windows**
     - Download installation executables from https://evermeet.cx/ffmpeg/.
+    - add `.env` with `FFMPEG_PATH=path/to/ffmpeg/executable`
 - **Linux**
     - `sudo apt install ffmpeg`
 - **FreeBSD**

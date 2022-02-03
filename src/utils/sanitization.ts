@@ -17,7 +17,7 @@ export type QuerySchema<T> = {
 export function sanitizeParameterSchema<T>(
   req: Request,
   schema: QuerySchema<T>
-): void {
+): req is Request & { query: T } {
   if (!schema || Object.keys(schema).length === 0) {
     throw new Error(`No schema defined in ${req.hostname}`);
   }
@@ -26,7 +26,7 @@ export function sanitizeParameterSchema<T>(
     key: string,
     ignoreLinks: boolean = false
   ) => {
-    const param = req.query[key];
+    const param = req.body[key];
     const paramSchema = schema[key as keyof T];
 
     if (!paramSchema) {
@@ -51,24 +51,34 @@ export function sanitizeParameterSchema<T>(
             evaluateParameterSchema(linkedParam, true);
             return true;
           } catch (e) {
-            return false;
+            if (e instanceof MissingMandatoryPropertyError) {
+              return false;
+            }
           }
         });
 
         if (linksEvaluations.every((success) => !success)) {
           throw new MissingLinkedPropertyError([key, ...paramSchema.linked]);
         }
+
+        return true;
       }
 
-      throw new MissingMandatoryPropertyError(key);
+      if (!param) {
+        throw new MissingMandatoryPropertyError(key);
+      }
     }
 
     if (typeof param !== paramSchema.type) {
       throw new WrongTypePropertyError(key, paramSchema.type, typeof param);
     }
+
+    return true;
   };
 
-  Object.keys(schema).map((key) => evaluateParameterSchema(key));
+  return Object.keys(schema)
+    .map((key) => evaluateParameterSchema(key))
+    .every((success) => !!success);
 }
 
 export class RequestError extends Error {

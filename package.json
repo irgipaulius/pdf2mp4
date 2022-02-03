@@ -35,11 +35,11 @@
   },
   "dependencies": {
     "express": "^4.17.2",
+    "ffmpeg-stream": "^0.7.0",
     "fs": "0.0.1-security",
     "lodash": "^4.17.21",
     "path": "^0.12.7",
     "pdf2pic": "^2.1.4",
-    "pdfjs-dist": "2.3.200",
-    "videoshow": "^0.1.12"
+    "pdfjs-dist": "2.3.200"
   }
 }
