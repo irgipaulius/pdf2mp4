@@ -1,10 +1,5 @@
-import { Request } from "express";
-
-export interface Pdf2Mp4_QuerySchema {
-  filename: string;
-  secondsPerFrame?: number;
-  framesPerSecond?: number;
-}
+import { Request, Response } from "express";
+import { FileArray } from "express-fileupload";
 
 export interface QuerySchemaExpression<T, K = keyof T> {
   /** type prototype name */
@@ -19,10 +14,10 @@ export type QuerySchema<T> = {
   [K in keyof T]: QuerySchemaExpression<T, K>;
 };
 
-export function sanitizeParameterSchema<T>(
+export function sanitizeBodySchema<T>(
   req: Request,
   schema: QuerySchema<T>
-): req is Request & { query: T } {
+): req is Omit<Request, "body"> & { body: T } {
   if (!schema || Object.keys(schema).length === 0) {
     throw new Error(`No schema defined in ${req.hostname}`);
   }
@@ -84,6 +79,23 @@ export function sanitizeParameterSchema<T>(
   return Object.keys(schema)
     .map((key) => evaluateParameterSchema(key))
     .every((success) => !!success);
+}
+
+export function sanitizeFiles<T>(
+  req: Request,
+  res: Response
+): req is Request & { files: FileArray & T } {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    res.status(400).send("No files were uploaded.");
+    return false;
+  }
+
+  if (Array.isArray(req.files)) {
+    res.status(400).send("Please only upload one file at the time.");
+    return false;
+  }
+
+  return true;
 }
 
 export class RequestError extends Error {

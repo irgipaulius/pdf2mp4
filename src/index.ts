@@ -3,6 +3,7 @@ export { getPdfFormatInfo } from "./lib/getPdfInfo";
 export { renderVideo } from "./lib/renderVideo";
 export * from "./utils/sanitization";
 export { createEventLogger } from "./utils/eventEmitter";
+export { disposeOldFiles } from "./utils/disposeFiles";
 
 import EventEmitter from "events";
 import fs from "fs";
@@ -11,6 +12,24 @@ import path from "path";
 import { rasterizePDF } from "./lib/rasterizePDF";
 import { renderVideo } from "./lib/renderVideo";
 import { BenchmarkEmitter } from "./utils/benchmark";
+import { disposeFrames } from "./utils/disposeFiles";
+
+export interface DefaultQueryInput {
+  filename: string;
+  secondsPerFrame?: number;
+  framesPerSecond?: number;
+}
+
+export interface CustomPathsInput {
+  /** @default is `pdf2mp4/generated`. Created if missing */
+  generatedDir: string;
+  /** @default is `pdf2mp4/generated/video`. Created if missing */
+  outputDir: string;
+  /** @default is `pdf2mp4/generated/temp`. Created if missing */
+  tempDir: string;
+  /** @default is `pdf2mp4/upload/`. */
+  uploadDir: string;
+}
 
 /**
  * converts pdf file or buffer to mp4
@@ -53,30 +72,21 @@ import { BenchmarkEmitter } from "./utils/benchmark";
  *
  */
 export async function pdf2mp4(
-  filename: string,
-  options: {
-    // filename: string;
-    secondsPerFrame?: number;
-    framesPerSecond?: number;
-    /** @default is `pdf2mp4/generated/video/*.mp4`. Last directory created if missing */
-    outputPath?: string;
-  },
+  options: DefaultQueryInput & CustomPathsInput,
   e?: EventEmitter
-) {
+): Promise<string> {
   const total = new BenchmarkEmitter("benchmark_total", "converting", e);
+
+  const { filename, framesPerSecond, secondsPerFrame } = options;
+  const fps = calculateFps(framesPerSecond, secondsPerFrame);
 
   e?.emit("start", `Converting ${filename}...`, filename);
 
-  const fps = calculateFps(options.framesPerSecond, options.secondsPerFrame);
-
-  const projectRootPath = path.resolve(__dirname, "../");
-  const pdfFilePath = path.resolve(projectRootPath, filename);
-  const generatedPath = path.resolve(projectRootPath, "generated", "temp");
-  const videoPath =
-    options.outputPath || path.resolve(projectRootPath, "generated", "video");
+  const { generatedDir, outputDir, tempDir, uploadDir } = options;
+  const pdfFilePath = path.resolve(uploadDir, filename);
 
   // resolve path to destination, if needed
-  [videoPath, generatedPath].forEach(
+  [generatedDir, outputDir, tempDir].forEach(
     (path) => !fs.existsSync(path) && fs.mkdirSync(path)
   );
 
@@ -87,7 +97,7 @@ export async function pdf2mp4(
   const generatedImages = await rasterizePDF(
     {
       pdfFilePath,
-      destinationPath: generatedPath,
+      destinationPath: tempDir,
       saveFilename: hash,
     },
     e
@@ -96,7 +106,7 @@ export async function pdf2mp4(
 
   const frames = generatedImages.map(({ path }) => path!);
   const videoFilename = `${hash}.mp4`;
-  const videoDestination = path.resolve(videoPath, `${hash}.mp4`);
+  const videoDestination = path.resolve(outputDir, `${hash}.mp4`);
 
   const render = new BenchmarkEmitter("benchmark_render", "rendering", e);
   await renderVideo(
@@ -106,13 +116,10 @@ export async function pdf2mp4(
       outputFile: videoDestination,
     },
     e
-  ).catch((error) => {
-    disposeGeneratedFrames(frames);
-    throw error;
-  });
+  );
   render.emitBenchmark();
 
-  disposeGeneratedFrames(frames);
+  disposeFrames(frames);
 
   e?.emit(
     "end",
@@ -134,8 +141,4 @@ function calculateFps(fps?: number, spf?: number) {
     return 1 / spf;
   }
   throw new Error("Please provide desired output framerate.");
-}
-
-function disposeGeneratedFrames(frames: string[]) {
-  frames.forEach((file) => fs.unlink(file, () => {}));
 }
