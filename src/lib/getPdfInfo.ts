@@ -1,5 +1,6 @@
 import { getDocument } from "pdfjs-dist";
 
+/** returns size and resolution of the pdf. useful for estimating final size and processing time */
 export async function getPdfFormatInfo(dataBuffer: Buffer): Promise<{
   numPages: number;
   width: number;

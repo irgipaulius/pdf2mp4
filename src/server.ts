@@ -1,5 +1,6 @@
 import express from "express";
 import { pdf2mp4 } from "./index";
+import { createEventLogger } from "./utils/eventEmitter";
 import {
   sanitizeParameterSchema,
   Pdf2Mp4_QuerySchema,
@@ -19,7 +20,11 @@ app.get("/pdf2mp4", async function (req, res, next) {
     ) {
       const { filename } = req.body;
 
-      const result = await pdf2mp4(filename, req.body);
+      const result = await pdf2mp4(
+        filename,
+        req.body,
+        createEventLogger()
+      );
 
       return res.status(200).send(result);
     }
