@@ -1,48 +1,44 @@
+export * from "./lib/rasterizePDF";
+export * from "./lib/getPdfInfo";
+export * from "./lib/renderVideo";
+export * from "./utils/sanitization";
+
 import fs from "fs";
 import path from "path";
 
-import { getPdfInfo } from "./getPdfInfo";
-import { rasterizePDF } from "./rasterizePDF";
-import { renderVideo } from "./renderVideo";
+import { rasterizePDF } from "./lib/rasterizePDF";
+import { renderVideo } from "./lib/renderVideo";
 
-export interface ConversionOptions {
-  filename: string;
-  secondsPerFrame?: number;
-  framesPerSecond?: number;
-  /** @default is `pdf2mp4/generated/video/*.mp4`. Last directory created if missing */
-  outputPath?: string;
-}
-
-export async function generateMP4(filename, options: ConversionOptions) {
+export async function pdf2mp4(
+  filename: string,
+  options: {
+    filename: string;
+    secondsPerFrame?: number;
+    framesPerSecond?: number;
+    /** @default is `pdf2mp4/generated/video/*.mp4`. Last directory created if missing */
+    outputPath?: string;
+  }
+) {
   const projectRootPath = path.resolve(__dirname, "../", "../");
   const pdfFilePath = path.resolve(projectRootPath, filename);
   const generatedPath = path.resolve(projectRootPath, "generated", "temp");
   const videoPath =
     options.outputPath || path.resolve(projectRootPath, "generated", "video");
 
-  const fps = calculateFps(options);
+  const fps = calculateFps(options.framesPerSecond, options.secondsPerFrame);
 
   [videoPath, generatedPath].forEach(
     (path) => !fs.existsSync(path) && fs.mkdirSync(path)
   );
 
-  let dataBuffer = fs.readFileSync(pdfFilePath);
-
-  const pdfInfo = await getPdfInfo(dataBuffer);
-  const numPages = pdfInfo.numPages;
-  const finalHeight = 1080;
-  const finalWidth = (finalHeight / pdfInfo.height) * pdfInfo.width;
   const hash = (+new Date()).toString(36);
 
   console.time(`rasterization ${filename}`);
-  const generatedImages = await rasterizePDF(
+  const generatedImages = await rasterizePDF({
     pdfFilePath,
-    generatedPath,
-    hash,
-    finalWidth,
-    finalHeight,
-    numPages
-  );
+    destinationPath: generatedPath,
+    saveFilename: hash,
+  });
   console.timeEnd(`rasterization ${filename}`);
 
   const frames = generatedImages.map(({ path }) => path!);
@@ -64,16 +60,14 @@ export async function generateMP4(filename, options: ConversionOptions) {
   return { videoDestination };
 }
 
-function calculateFps(options: ConversionOptions) {
-  if (options.framesPerSecond) {
-    return options.framesPerSecond;
+function calculateFps(fps?: number, spf?: number) {
+  if (fps) {
+    return fps;
   }
-
-  if (options.secondsPerFrame) {
-    return 1 / options.secondsPerFrame;
+  if (spf) {
+    return 1 / spf;
   }
-
-  throw new Error("Please provide required conversion options.");
+  throw new Error("Please provide desired output framerate.");
 }
 
 function disposeGeneratedFrames(frames: string[]) {

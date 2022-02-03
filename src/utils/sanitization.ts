@@ -1,5 +1,10 @@
-import { Request, Response, NextFunction } from "express";
-import { isError } from "lodash";
+import { Request } from "express";
+
+export interface Pdf2Mp4_QuerySchema {
+  filename: string;
+  secondsPerFrame?: number;
+  framesPerSecond?: number;
+}
 
 export interface QuerySchemaExpression<T, K = keyof T> {
   /** type prototype name */

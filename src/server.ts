@@ -1,15 +1,12 @@
 import express from "express";
-import { generateMP4 } from "./services/generateMP4";
-import { sanitizeParameterSchema } from "./utils/sanitization";
+import { pdf2mp4 } from "./index";
+import {
+  sanitizeParameterSchema,
+  Pdf2Mp4_QuerySchema,
+} from "./utils/sanitization";
 
 const app = express();
-app.use(express.json())
-
-interface Pdf2Mp4_QuerySchema {
-  filename: string;
-  secondsPerFrame?: number;
-  framesPerSecond?: number;
-}
+app.use(express.json());
 
 app.get("/pdf2mp4", async function (req, res, next) {
   try {
@@ -22,8 +19,7 @@ app.get("/pdf2mp4", async function (req, res, next) {
     ) {
       const { filename } = req.body;
 
-      const result = await generateMP4(filename, req.body);
-
+      const result = await pdf2mp4(filename, req.body);
 
       return res.status(200).send(result);
     }

@@ -6,15 +6,16 @@
     "esModuleInterop": true,
     "downlevelIteration": true,
     "strict": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "strictNullChecks": true,
     "checkJs": true,
     "types": ["node"],
     "lib": ["es6"],
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "allowUnreachableCode": false
+    "allowUnreachableCode": false,
+    "declaration": true,
   },
   "include": ["src/**/*.ts", "src/**/*.js", "declarations.d.ts"],
-  "exclude": ["node_modules", "<node_internals>/**"]
+  "exclude": ["node_modules", "dist", "<node_internals>/**"]
 }
