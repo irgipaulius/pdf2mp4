@@ -33,8 +33,9 @@ Next, you must install [ImageMagick](https://www.imagemagick.org/script/download
 - Official instructions: https://github.com/yakovmeister/pdf2image/blob/HEAD/docs/gm-installation.md
 
 - **OSX**:
-    - `brew install imagemagick`
     - `brew install graphicsmagick`
+    - `brew install gs`
+    - `brew install imagemagick`
 - **Windows, Linux** - _install manually:_
     - [ImageMagick](https://www.imagemagick.org/script/download.php) 
     - [gm](https://www.npmjs.com/package/gm)

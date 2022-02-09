@@ -1,13 +1,15 @@
 import { getDocument } from "pdfjs-dist";
 
-/** returns size and resolution of the pdf. useful for estimating final size and processing time */
+/** returns size and resolution of the pdf */
 export async function getPdfFormatInfo(dataBuffer: Buffer): Promise<{
   numPages: number;
   width: number;
   height: number;
 }> {
   const pdfDocument = await getDocument({ data: dataBuffer }).promise;
-  const page = await pdfDocument.getPage(1);
+  // here I am sampling a page N/2 from the PDF, because sometimes book
+  // pdfs can have first and last cover pages different aspect ratio
+  const page = await pdfDocument.getPage(Math.round(pdfDocument.numPages / 2));
   const viewport = page.getViewport({ scale: 1 });
 
   return {

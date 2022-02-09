@@ -5,6 +5,8 @@ import EventEmitter from "events";
 export function createEventLogger() {
   const e = new EventEmitter();
 
+  e.setMaxListeners(10);
+
   e.on("start", (message, filename) => {
     console.log(message);
   });

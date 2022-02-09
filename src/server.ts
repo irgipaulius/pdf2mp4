@@ -8,6 +8,7 @@ import { createEventLogger } from "./utils/eventEmitter";
 import { sanitizeBodySchema, sanitizeFiles } from "./utils/sanitization";
 import { keepDisposingOldFilesForever } from "./utils/disposeFiles";
 import { getDefaultPaths } from "./paths";
+import { launchFrontEnd } from "./frontend";
 
 const app = express();
 app.use(fileUpload());
@@ -67,6 +68,7 @@ app.post("/pdf2mp4", async (req, res) => {
 
 app.listen(3200, () => {
   console.log("App listening on port 3200!");
+  launchFrontEnd();
 });
 
 // delete files older than 12 hours (with default options)

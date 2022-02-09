@@ -6,7 +6,7 @@ export function getDefaultPaths(): CustomPathsInput {
   const generatedDir = path.resolve(projectRootDir, "generated");
   const tempDir = path.resolve(generatedDir, "temp");
   const outputDir = path.resolve(generatedDir, "video");
-  const uploadDir = path.resolve(generatedDir, "upload");
+  const uploadDir = path.resolve(projectRootDir, "upload");
 
   return {
     generatedDir,

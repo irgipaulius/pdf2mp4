@@ -1,4 +1,3 @@
-export { rasterizePDF } from "./lib/rasterizePDF";
 export { getPdfFormatInfo } from "./lib/getPdfInfo";
 export { renderVideo } from "./lib/renderVideo";
 export * from "./utils/sanitization";
@@ -9,7 +8,7 @@ import EventEmitter from "events";
 import fs from "fs";
 import path from "path";
 
-import { rasterizePDF } from "./lib/rasterizePDF";
+import { Rasterize } from "./lib/rasterize";
 import { renderVideo } from "./lib/renderVideo";
 import { BenchmarkEmitter } from "./utils/benchmark";
 import { disposeFrames } from "./utils/disposeFiles";
@@ -94,7 +93,7 @@ export async function pdf2mp4(
   const hash = (+new Date()).toString(36);
 
   const raster = new BenchmarkEmitter("benchmark_raster", "rasterization", e);
-  const generatedImages = await rasterizePDF(
+  const rasterize = new Rasterize(
     {
       pdfFilePath,
       destinationPath: tempDir,
@@ -102,6 +101,8 @@ export async function pdf2mp4(
     },
     e
   );
+  const generatedImages = await rasterize.run();
+
   raster.emitBenchmark();
 
   const frames = generatedImages.map(({ path }) => path!);

@@ -60,7 +60,7 @@ export async function renderVideo(
       });
     })
   );
-  
+
   render.closingEmit();
 
   ffmpegInput.end();
