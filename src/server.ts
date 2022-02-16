@@ -1,4 +1,5 @@
 import express from "express";
+import path from 'path'
 import fileUpload from "express-fileupload";
 
 import config from "../config.json";
@@ -11,7 +12,7 @@ const app = express();
 app.set("view options", { layout: false });
 app.use(fileUpload());
 app.use(express.json());
-app.use(express.static(__dirname + "/views"));
+app.use(express.static(path.join(__dirname, '../', "/views")));
 
 loadEndpoints(app);
 
