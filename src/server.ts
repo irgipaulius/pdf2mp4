@@ -12,7 +12,7 @@ const app = express();
 app.set("view options", { layout: false });
 app.use(fileUpload());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../', "/views")));
+// app.use(express.static(path.join(__dirname, '../', "/views")));
 
 loadEndpoints(app);
 
