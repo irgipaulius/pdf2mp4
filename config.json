@@ -1,0 +1,9 @@
+{
+  "maxConcurrency": 8,
+
+  "uploadPath": "__dirname/upload",
+  "temporaryPath": "__dirname/generated/temp",
+  "outputPath": "__dirname/generated/video",
+
+  "serverPort": 8080
+}

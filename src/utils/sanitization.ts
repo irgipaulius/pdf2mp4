@@ -14,10 +14,24 @@ export type QuerySchema<T> = {
   [K in keyof T]: QuerySchemaExpression<T, K>;
 };
 
+export function sanitizeQuerySchema<T>(
+  req: Request,
+  schema: QuerySchema<T>
+): req is Exclude<Request, "query"> & { query: T } {
+  return sanitizeInputSchema(req, schema, "query");
+}
 export function sanitizeBodySchema<T>(
   req: Request,
   schema: QuerySchema<T>
-): req is Omit<Request, "body"> & { body: T } {
+): req is Exclude<Request, "body"> & { body: T } {
+  return sanitizeInputSchema(req, schema, "body");
+}
+
+function sanitizeInputSchema<T>(
+  req: Request,
+  schema: QuerySchema<T>,
+  querySource: "body" | "query"
+): boolean {
   if (!schema || Object.keys(schema).length === 0) {
     throw new Error(`No schema defined in ${req.hostname}`);
   }
@@ -26,8 +40,8 @@ export function sanitizeBodySchema<T>(
     key: string,
     ignoreLinks: boolean = false
   ) => {
-    const param = req.body[key];
     const paramSchema = schema[key as keyof T];
+    const param = req[querySource][key];
 
     if (!paramSchema) {
       throw new Error(

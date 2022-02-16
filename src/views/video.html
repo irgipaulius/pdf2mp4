@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MP4 Video Stream</title>
+    <style>
+      div.center {
+        text-align: center;
+        vertical-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="center">
+      <video id="videoPlayer" height=640 controls muted="muted" autoplay>
+        <source id="mp4source" src="/video/stream" type="video/mp4" />
+      </video>
+    </div>
+
+    <script>
+      function getVideoName() {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+          var pair = vars[i].split("=");
+          if (pair[0] == "name") {
+            return pair[1];
+          }
+        }
+        return false;
+      }
+
+      function setSource() {
+        var videoName = getVideoName();
+
+        if (!videoName) {
+          alert("This video is unavailable");
+          return;
+        }
+
+        var mp4source = document.getElementById("mp4source");
+        mp4source.setAttribute("src", "/video/stream?name=" + videoName);
+      }
+
+      window.onload = setSource();
+    </script>
+  </body>
+</html>

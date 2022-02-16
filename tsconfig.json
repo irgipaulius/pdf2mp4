@@ -15,6 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "allowUnreachableCode": false,
     "declaration": true,
+    "resolveJsonModule": true
   },
   "include": ["src/**/*.ts", "src/**/*.js", "declarations.d.ts"],
   "exclude": ["node_modules", "dist", "<node_internals>/**"]

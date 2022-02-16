@@ -8,11 +8,12 @@ export function disposeFrames(frames: string[]) {
 }
 
 export function disposeOldFiles(options: CustomPathsInput) {
-  const result = findRemoveSync(options.tempDir, {
+  findRemoveSync(options.tempDir, {
     age: { seconds: 1000 * 3600 },
   });
 }
 
+/** deletes all unnecessary files from tempDir */
 export function keepDisposingOldFilesForever(options: CustomPathsInput) {
   disposeOldFiles(options);
   setTimeout(() => keepDisposingOldFilesForever(options), 1000 * 3600 * 12); // 12 hours

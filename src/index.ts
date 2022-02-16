@@ -5,7 +5,6 @@ export { createEventLogger } from "./utils/eventEmitter";
 export { disposeOldFiles } from "./utils/disposeFiles";
 
 import EventEmitter from "events";
-import fs from "fs";
 import path from "path";
 
 import { Rasterize } from "./lib/rasterize";
@@ -14,14 +13,12 @@ import { BenchmarkEmitter } from "./utils/benchmark";
 import { disposeFrames } from "./utils/disposeFiles";
 
 export interface DefaultQueryInput {
-  filename: string;
+  filePath: string;
   secondsPerFrame?: number;
   framesPerSecond?: number;
 }
 
 export interface CustomPathsInput {
-  /** @default is `pdf2mp4/generated`. Created if missing */
-  generatedDir: string;
   /** @default is `pdf2mp4/generated/video`. Created if missing */
   outputDir: string;
   /** @default is `pdf2mp4/generated/temp`. Created if missing */
@@ -76,18 +73,13 @@ export async function pdf2mp4(
 ): Promise<string> {
   const total = new BenchmarkEmitter("benchmark_total", "converting", e);
 
-  const { filename, framesPerSecond, secondsPerFrame } = options;
+  const { filePath, framesPerSecond, secondsPerFrame } = options;
   const fps = calculateFps(framesPerSecond, secondsPerFrame);
 
-  e?.emit("start", `Converting ${filename}...`, filename);
+  e?.emit("start", `Converting ${filePath}...`, filePath);
 
-  const { generatedDir, outputDir, tempDir, uploadDir } = options;
-  const pdfFilePath = path.resolve(uploadDir, filename);
-
-  // resolve path to destination, if needed
-  [generatedDir, outputDir, tempDir].forEach(
-    (path) => !fs.existsSync(path) && fs.mkdirSync(path)
-  );
+  const { outputDir, tempDir, uploadDir } = options;
+  const pdfFilePath = path.resolve(uploadDir, filePath);
 
   // this will be the filename for all generated items
   const hash = (+new Date()).toString(36);
@@ -124,14 +116,14 @@ export async function pdf2mp4(
 
   e?.emit(
     "end",
-    `Finished converting ${filename} to ${videoFilename}.`,
+    `Finished converting ${filePath} to ${videoFilename}.`,
     videoFilename,
     videoDestination
   );
 
   total.emitBenchmark();
 
-  return videoDestination;
+  return videoFilename;
 }
 
 function calculateFps(fps?: number, spf?: number) {
