@@ -17,7 +17,11 @@ export function loadPdf2Mp4Endpoint(app: Express) {
         const { pdf } = req.files;
         const uploadDir = paths.uploadDir;
 
-        uploadPath = path.resolve(uploadDir, pdf.name);
+        const hash = (+new Date()).toString(36);
+        uploadPath = path.resolve(
+          uploadDir,
+          `${hash}_${pdf.name.split(" ").join("-")}`
+        );
 
         // Use the mv() method to place the file somewhere on your server
         await pdf.mv(uploadPath);
