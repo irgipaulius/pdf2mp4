@@ -8,7 +8,7 @@ import EventEmitter from "events";
 import { sequentialPromiseAll } from "../utils/differentPromiseAll";
 import { ProgressEmitter } from "../utils/progress";
 
-import config from "../../config.json";
+import config from "../config.json";
 
 export type WriteImageResponse = {
   name: string;

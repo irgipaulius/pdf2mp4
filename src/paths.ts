@@ -3,7 +3,7 @@ import path from "path";
 
 import { CustomPathsInput } from ".";
 
-import config from "../config.json";
+import config from "./config.json";
 
 export function getDefaultPaths(): CustomPathsInput {
   const { uploadPath, temporaryPath, outputPath } = config;

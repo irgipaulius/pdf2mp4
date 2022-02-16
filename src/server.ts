@@ -2,7 +2,7 @@ import express from "express";
 import path from 'path'
 import fileUpload from "express-fileupload";
 
-import config from "../config.json";
+import config from "./config.json";
 
 import { getDefaultPaths } from "./paths";
 import { loadEndpoints } from "./endpoints";
