@@ -7,7 +7,7 @@ import { loadVideoStreamEndpoint } from "./videoStream";
 
 export function loadEndpoints(app: Express) {
   app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "../", "../", "views", "index.html"));
+    res.sendFile(path.join(__dirname, "../", "views", "index.html"));
   });
 
   loadPdf2Mp4Endpoint(app);
