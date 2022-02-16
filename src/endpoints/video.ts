@@ -10,7 +10,7 @@ export function loadVideoEndpoint(app: Express) {
         name: { type: "string", optional: false },
       })
     ) {
-      res.sendFile(path.join(__dirname, "../", '../', "views", "video.html"));
+      res.sendFile(path.join(__dirname, "../", "views", "video.html"));
     }
   });
 }

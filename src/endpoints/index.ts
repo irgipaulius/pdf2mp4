@@ -7,7 +7,6 @@ import { loadVideoStreamEndpoint } from "./videoStream";
 
 export function loadEndpoints(app: Express) {
   app.get("/", function (req, res) {
-    console.log('test')
     res.sendFile(path.join(__dirname, "../", "../", "views", "index.html"));
   });
 
