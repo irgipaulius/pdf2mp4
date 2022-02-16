@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx ts-node -T src/server.ts",
-    "deploy": "tsc && npm run copy-files && node dist/src/server.js",
+    "deploy": "tsc && npm run copy-files && node dist/server.js",
     "types": "npx typesync",
     "prepublish": "tsc",
     "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css dist/"
