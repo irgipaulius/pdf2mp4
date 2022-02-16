@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx ts-node -T src/server.ts",
-    "deploy": "tsc && node dist/server.js",
+    "deploy": "tsc && node dist/src/server.js",
     "types": "npx typesync",
     "prepublish": "tsc"
   },

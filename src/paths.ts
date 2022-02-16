@@ -8,9 +8,10 @@ import config from "../config.json";
 export function getDefaultPaths(): CustomPathsInput {
   const { uploadPath, temporaryPath, outputPath } = config;
 
-  const normalize = (p: string) => p.replace("__dirname", __dirname);
-
   const projectRootDir = path.resolve(__dirname, "../");
+
+  const normalize = (p: string) => p.replace("__dirname", projectRootDir);
+
   const generatedDir = path.resolve(projectRootDir, "generated");
 
   const defaultTempDir = path.resolve(generatedDir, "temp");
