@@ -13,9 +13,22 @@
   </head>
   <body>
     <div class="center">
-      <video id="videoPlayer" height=640 controls muted="muted" autoplay>
+      <video id="videoPlayer" height="640" controls muted="muted" autoplay>
         <source id="mp4source" src="/video/stream" type="video/mp4" />
       </video>
+    </div>
+    <br />
+    <div>
+      <form id="downloadBtn" action="#" method="get">
+        <input
+          type="text"
+          id="filename"
+          name="name"
+          value=""
+          style="display: none"
+        />
+        <button type="submit">Download</button>
+      </form>
     </div>
 
     <script>
@@ -31,7 +44,7 @@
         return false;
       }
 
-      function setSource() {
+      function setSources() {
         var videoName = getVideoName();
 
         if (!videoName) {
@@ -40,10 +53,17 @@
         }
 
         var mp4source = document.getElementById("mp4source");
+        var downloadBtn = document.getElementById("downloadBtn");
+        var filename = document.getElementById("filename");
         mp4source.setAttribute("src", "/video/stream?name=" + videoName);
+        downloadBtn.setAttribute(
+          "action",
+          location.protocol + "/video/download"
+        );
+        filename.setAttribute("value", videoName);
       }
 
-      window.onload = setSource();
+      window.onload = setSources();
     </script>
   </body>
 </html>
