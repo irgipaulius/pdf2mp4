@@ -14,8 +14,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "allowUnreachableCode": false,
-    "declaration": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "declaration": true
   },
   "include": ["src/**/*.ts", "src/**/*.js", "declarations.d.ts"],
   "exclude": ["node_modules", "dist", "<node_internals>/**"]
