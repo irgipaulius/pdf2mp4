@@ -80,7 +80,7 @@ await pdf2mp4(
 );
 ```
 
-### Properties
+## Properties
 
 | Property        | type             | default value             | description                                                                                    |
 | --------------- | ---------------- | ------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -92,7 +92,7 @@ await pdf2mp4(
 | tempDir         | optional string  | "pdf2mp4/generated/temp"  | path to directory where temporary files will be generated                                      |
 | outputDir       | optional string  | "pdf2mp4/generated/video" | path to directory where generated mp4 file is placed                                           |
 
-### Events (optional)
+## Events (optional)
 
 For example, on front-end you can implement a full-fledged processing loading animation, which is accurate to the actual process:
 
@@ -129,3 +129,9 @@ e.on("end", (message, videoFilename, videoDestination) => {
 // no need to await, result will be in the 'end' event
 pdf2mp4("sample.pdf", { framesPerSecond: 0.33 }, e);
 ```
+
+# Notes
+
+This is my first ever published npm package. Submit issues to the [github repository](https://github.com/irgipaulius/pdf2mp4) for any extra features or questions.
+
+There is also a fully developed website that uses this package at https://www.hyperreader.eu, and it's source code is [here](https://github.com/irgipaulius/hyperreader).

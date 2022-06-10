@@ -27,6 +27,18 @@ export interface CustomPathsInput {
 
 /**
  * Converts pdf file or buffer to mp4
+ * 
+ * # Options
+ * | Property        | type             | default value             | description                                                                                    |
+| --------------- | ---------------- | ------------------------- | ---------------------------------------------------------------------------------------------- |
+| fileName        | mandatory string |                           | name of the pdf file.                                                                          |
+| secondsPerFrame | optional number  |                           | either this or `framesPerSecond` must be set.                                                  |
+| framesPerSecond | optional number  |                           | either this or `secondsPerFrame` must be set.                                                  |
+| maxConcurrency  | optional number  | 8                         | max concurrent frames to process at the same time. Directly affects performance and stability. |
+| uploadDir       | optional string  | "pdf2mp4/upload"          | path to directory where pdf files are located                                                  |
+| tempDir         | optional string  | "pdf2mp4/generated/temp"  | path to directory where temporary files will be generated                                      |
+| outputDir       | optional string  | "pdf2mp4/generated/video" | path to directory where generated mp4 file is placed                                           |
+ * # Events
  * @param e optional event emitter to receive events throughout each stage of conversion.
  * >@note emitted events: `start`, `benchmark_raster`, `benchmark_render`, `progress`, `end`
  *
