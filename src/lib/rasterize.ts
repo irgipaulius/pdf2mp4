@@ -5,7 +5,7 @@ import path from "path";
 
 import { getPdfFormatInfo } from "..";
 import EventEmitter from "events";
-import { sequentialPromiseAll } from "../utils/differentPromiseAll";
+import { sequentialPromiseAll } from "../utils/sequentialPromiseAll";
 import { ProgressEmitter } from "../utils/progress";
 
 import config from "../config.json";
@@ -18,7 +18,8 @@ export type WriteImageResponse = {
   page: number;
 };
 
-/** turn pdf into a set of images.
+/**
+ * turn pdf into a set of images.
  * @param e optional event emitter to receive events throughout each stage of rasterization.
  * >@note emitted events: `progress`
  *

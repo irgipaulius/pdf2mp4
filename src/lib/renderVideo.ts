@@ -1,11 +1,11 @@
 import { createReadStream, createWriteStream } from "fs";
 import { Converter } from "ffmpeg-stream";
 import EventEmitter from "events";
-import { sequentialPromiseAll } from "../utils/differentPromiseAll";
+import { sequentialPromiseAll } from "../utils/sequentialPromiseAll";
 import { ProgressEmitter } from "../utils/progress";
 
 /**
- * creates video from image files to `.mp4`.
+ * creates video from image files.
  */
 export async function renderVideo(
   options: {

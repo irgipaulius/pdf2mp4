@@ -1,8 +1,11 @@
 export { getPdfFormatInfo } from "./lib/getPdfInfo";
 export { renderVideo } from "./lib/renderVideo";
-export * from "./utils/sanitization";
+export { Rasterize } from "./lib/rasterize";
 export { createEventLogger } from "./utils/eventEmitter";
-export { disposeOldFiles } from "./utils/disposeFiles";
+export {
+  disposeOldFiles,
+  keepDisposingOldFilesForever,
+} from "./utils/disposeFiles";
 
 import EventEmitter from "events";
 import path from "path";
@@ -11,12 +14,6 @@ import { Rasterize } from "./lib/rasterize";
 import { renderVideo } from "./lib/renderVideo";
 import { BenchmarkEmitter } from "./utils/benchmark";
 import { disposeFrames } from "./utils/disposeFiles";
-
-export interface DefaultQueryInput {
-  filePath: string;
-  secondsPerFrame?: number;
-  framesPerSecond?: number;
-}
 
 export interface CustomPathsInput {
   /** @default is `pdf2mp4/generated/video`. Created if missing */
@@ -28,7 +25,7 @@ export interface CustomPathsInput {
 }
 
 /**
- * converts pdf file or buffer to mp4
+ * Converts pdf file or buffer to mp4
  * @param process.env.PDF2MP4_UNLOCK if set to 'true', it will go at max speed. If set to 'false', it will go at slowest speed. Recommended to not set it at all.
  * @param e optional event emitter to receive events throughout each stage of conversion.
  * >@note emitted events: `start`, `benchmark_raster`, `benchmark_render`, `progress`, `end`
@@ -68,7 +65,11 @@ export interface CustomPathsInput {
  *
  */
 export async function pdf2mp4(
-  options: DefaultQueryInput & CustomPathsInput,
+  options: {
+    filePath: string;
+    secondsPerFrame?: number;
+    framesPerSecond?: number;
+  } & CustomPathsInput,
   e?: EventEmitter
 ): Promise<string> {
   const total = new BenchmarkEmitter("benchmark_total", "converting", e);

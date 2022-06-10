@@ -1,20 +1,26 @@
 import fs from "fs";
 import findRemoveSync from "find-remove";
 
-import { CustomPathsInput } from "..";
-
+/**
+ * Deletes provided frames
+ */
 export function disposeFrames(frames: string[]) {
   frames.forEach((file) => fs.unlink(file, () => {}));
 }
 
-export function disposeOldFiles(options: CustomPathsInput) {
-  findRemoveSync(options.tempDir, {
+/**
+ * Deletes files from tempDir, if they're older than one hour
+ */
+export function disposeOldFiles(tempDir: string) {
+  findRemoveSync(tempDir, {
     age: { seconds: 1000 * 3600 },
   });
 }
 
-/** deletes all unnecessary files from tempDir */
-export function keepDisposingOldFilesForever(options: CustomPathsInput) {
-  disposeOldFiles(options);
-  setTimeout(() => keepDisposingOldFilesForever(options), 1000 * 3600 * 12); // 12 hours
+/**
+ * Deletes older than one hour files from tempDir every 12 hours
+ */
+export function keepDisposingOldFilesForever(tempDir: string) {
+  disposeOldFiles(tempDir);
+  setTimeout(() => keepDisposingOldFilesForever(tempDir), 1000 * 3600 * 12); // 12 hours
 }
