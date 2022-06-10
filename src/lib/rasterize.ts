@@ -8,7 +8,7 @@ import EventEmitter from "events";
 import { sequentialPromiseAll } from "../utils/sequentialPromiseAll";
 import { ProgressEmitter } from "../utils/progress";
 
-import config from "../config.json";
+import config from "../defaultConfig.json";
 
 export type WriteImageResponse = {
   name: string;
@@ -37,6 +37,7 @@ export class Rasterize {
   private numPages: number = 1;
   private finalHeight: number = 1080;
   private finalWidth: number = 1920;
+  private maxConcurrency: number = 1;
   private gm: GraphicsMagick.SubClass;
   private raster: ProgressEmitter | null;
 
@@ -45,6 +46,7 @@ export class Rasterize {
       pdfFilePath: string;
       destinationPath: string;
       saveFilename: string;
+      maxConcurrency?: number;
       /** default is 1080. width is scaled according to the pdf aspect ratio */
       height?: number;
     },
@@ -52,6 +54,10 @@ export class Rasterize {
   ) {
     this.raster = null;
     this.gm = GraphicsMagick.subClass({ imageMagick: true });
+    this.maxConcurrency =
+      options.maxConcurrency && options.maxConcurrency >= 1
+        ? options.maxConcurrency
+        : config.maxConcurrency;
   }
 
   async run() {
@@ -69,7 +75,7 @@ export class Rasterize {
     /** Asynchronously running only `config.maxConcurrency` number of pages at the time,
      * with a different readStream for each. */
     const results = await sequentialPromiseAll(
-      _.chunk([...Array(this.numPages).keys()], config.maxConcurrency || 1).map(
+      _.chunk([...Array(this.numPages).keys()], this.maxConcurrency).map(
         (chunk) => () => {
           const readStream = fs.createReadStream(this.options.pdfFilePath);
           return Promise.all(

@@ -31,7 +31,7 @@ export function createEventLogger() {
     console.log(message);
   });
 
-  e.on("end", (message, videoFilename, videoPath) => {
+  e.on("end", (message, videoFilename, videoDestination) => {
     console.log(message);
   });
 

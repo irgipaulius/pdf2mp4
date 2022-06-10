@@ -14,73 +14,83 @@ import { Rasterize } from "./lib/rasterize";
 import { renderVideo } from "./lib/renderVideo";
 import { BenchmarkEmitter } from "./utils/benchmark";
 import { disposeFrames } from "./utils/disposeFiles";
+import { getDefaultPaths } from "./paths";
 
 export interface CustomPathsInput {
-  /** @default is `pdf2mp4/generated/video`. Created if missing */
+  /** @default is `pdf2mp4/generated/video`. This directory is created if missing */
   outputDir: string;
-  /** @default is `pdf2mp4/generated/temp`. Created if missing */
+  /** @default is `pdf2mp4/generated/temp`. This directory is created if missing */
   tempDir: string;
-  /** @default is `pdf2mp4/upload/`. */
+  /** @default is `pdf2mp4/upload/`. This directory is created if missing */
   uploadDir: string;
 }
 
 /**
  * Converts pdf file or buffer to mp4
- * @param process.env.PDF2MP4_UNLOCK if set to 'true', it will go at max speed. If set to 'false', it will go at slowest speed. Recommended to not set it at all.
  * @param e optional event emitter to receive events throughout each stage of conversion.
  * >@note emitted events: `start`, `benchmark_raster`, `benchmark_render`, `progress`, `end`
  *
  * >@example
  * ```typescript
- * e.on('start', (message, filename) => {
- *  console.log(message); // Converting sample.pdf...
- * })
- *
- * e.on('benchmark_raster', (message, benchmarkSeconds) => {
- *  console.log(message); // `Finished rasterization in 6.9420 seconds.`
- * })
- *
- * e.on('benchmark_render', (message, benchmarkSeconds) => {
- *  console.log(message); // `Finished render in 6.9420 seconds.`
- * })
- *
- * e.on('progress_raster', (message, progress) => {
- *  console.log(message); // Rasterizing... 69/100
- *  setProgress(progress / 100); // great to use with states in react
- * })
- *
- * e.on('progress_render', (message, progress) => {
- *  console.log(message); // Rendering... 69/100
- *  setProgress(progress / 100); // great to use with states in react
- * })
- *
- * e.on('end', (message, videoFilename, videoPath) => {
- *  console.log(message); //
- *  resolve(videoDestination);
- * })
- *
+ * const e = new EventEmitter();
+ * 
+ * e.on("start", (message, filename) => {
+ *   console.log(message); // Converting sample.pdf...
+ * });
+ * 
+ * e.on("benchmark_raster", (message, benchmarkSeconds) => {
+ *   console.log(message); // `Finished rasterization in 6.9420 seconds.`
+ * });
+ * 
+ * e.on("benchmark_render", (message, benchmarkSeconds) => {
+ *   console.log(message); // `Finished render in 6.9420 seconds.`
+ * });
+ * 
+ * e.on("progress_raster", (message, progress) => {
+ *   console.log(message); // Rasterizing... 69/100
+ *   setProgress(progress / 100); // great to use with states for react
+ * });
+ * 
+ * e.on("progress_render", (message, progress) => {
+ *   console.log(message); // Rendering... 69/100
+ *   setProgress(progress / 100); // great to use with states for react
+ * });
+ * 
+ * e.on("end", (message, videoFilename, videoDestination) => {
+ *   console.log(message); // Finished converting sample.pdf to /usr/Johnny/.../pdf2mp4/Am83rH3ar0.mp4.
+ *   resolve(videoDestination); // final location of the mp4 file.
+ * });
+ * 
  * // no need to await, result will be in the 'end' event
- * pdf2mp4('sample.pdf', { framesPerSecond: 0.33 }, e);
+ * pdf2mp4("sample.pdf", { framesPerSecond: 0.33 }, e);
  * ```
  *
  */
 export async function pdf2mp4(
   options: {
-    filePath: string;
+    fileName: string;
     secondsPerFrame?: number;
     framesPerSecond?: number;
-  } & CustomPathsInput,
+    /**
+     * max concurrent frames to process at the same time. Directly affects performance.
+     * @default 8
+     * @recommendation if your machine hangs up too much while processing or throws memory errors,
+     * consider reducing this number.
+     */
+    maxConcurrency?: number;
+  } & Partial<CustomPathsInput>,
   e?: EventEmitter
 ): Promise<string> {
   const total = new BenchmarkEmitter("benchmark_total", "converting", e);
 
-  const { filePath, framesPerSecond, secondsPerFrame } = options;
+  const { fileName, framesPerSecond, secondsPerFrame, maxConcurrency } =
+    options;
   const fps = calculateFps(framesPerSecond, secondsPerFrame);
 
-  e?.emit("start", `Converting ${filePath}...`, filePath);
+  e?.emit("start", `Converting ${fileName}...`, fileName);
 
-  const { outputDir, tempDir, uploadDir } = options;
-  const pdfFilePath = path.resolve(uploadDir, filePath);
+  const { outputDir, tempDir, uploadDir } = getDefaultPaths(options);
+  const pdfFilePath = path.resolve(uploadDir, fileName);
 
   // this will be the filename for all generated items
   const hash = (+new Date()).toString(36);
@@ -91,6 +101,7 @@ export async function pdf2mp4(
       pdfFilePath,
       destinationPath: tempDir,
       saveFilename: hash,
+      maxConcurrency,
     },
     e
   );
@@ -117,7 +128,7 @@ export async function pdf2mp4(
 
   e?.emit(
     "end",
-    `Finished converting ${filePath} to ${videoFilename}.`,
+    `Finished converting ${fileName} to ${videoFilename}.`,
     videoFilename,
     videoDestination
   );

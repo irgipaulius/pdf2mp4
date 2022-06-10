@@ -3,10 +3,21 @@ import path from "path";
 
 import { CustomPathsInput } from ".";
 
-import config from "./config.json";
+import config from "./defaultConfig.json";
 
-export function getDefaultPaths(): CustomPathsInput {
-  const { uploadPath, temporaryPath, outputPath } = config;
+export function getDefaultPaths(
+  customPaths: Partial<CustomPathsInput>
+): CustomPathsInput {
+  const customConfig = {
+    uploadPath: customPaths.uploadDir,
+    temporaryPath: customPaths.tempDir,
+    outputPath: customPaths.outputDir,
+  };
+
+  const { uploadPath, temporaryPath, outputPath }: any = {
+    ...config,
+    ...JSON.parse(JSON.stringify(customConfig)), // overwrites, if present
+  };
 
   const projectRootDir = path.resolve(__dirname, "../");
 
